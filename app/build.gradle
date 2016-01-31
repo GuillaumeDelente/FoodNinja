@@ -1,0 +1,153 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url 'https://maven.fabric.io/public' }
+        mavenLocal()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.3.0'
+        classpath 'io.fabric.tools:gradle:1.19.2'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+
+repositories {
+    maven { url 'https://github.com/donnfelker/mvn-repo/raw/master/' }
+    maven { url 'https://jitpack.io' }
+    mavenLocal()
+    jcenter()
+}
+
+def computeVersionCode() {
+
+    if (System.env.BUILD_NUMBER) {              // Check if there is a system build number.
+        return "$System.env.BUILD_NUMBER".toInteger()
+    } else if (System.env.CIRCLE_BUILD_NUM) {   // Check to see if this is built on Circle CI
+        return "$System.env.CIRCLE_BUILD_NUM".toInteger()
+    } else if (System.env.TRAVIS_BUILD_NUMBER) {   // Check to see if this is built on Travis CI
+        return "$System.env.TRAVIS_BUILD_NUMBER".toInteger()
+    } else {
+        return 1                                // if none is found, default to 1.
+    }
+}
+
+def computeVersionName() {
+    return "1." + computeVersionCode()
+}
+
+//noinspection GroovyUnusedAssignment
+def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
+
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion '22.0.1'
+
+    defaultConfig {
+        minSdkVersion 18
+        targetSdkVersion 23
+
+        versionCode computeVersionCode()
+        versionName computeVersionName()
+
+        // Enable this if you want to use Build.GIT_SHA in your code somewhere.
+        // This will give you the last GIT_SHA that was committed
+        // buildConfigField "String", "GIT_SHA", "\"${gitSha}\""
+
+        manifestPlaceholders = [
+                fabricCrashlyticsApiKey: "7ba1725538a4afd002fb073a58cca7c3ba71dc84" //System.env.CRASHLYTICS_API_KEY   // Set this in your ~/.gradle/gradle.properties as: crashlyticsApiKey or use "$System.env.CRASHLYTICS_API_KEY"  to use a env variable (and then set that value, of course)
+        ]
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    packagingOptions {
+        // Exclude file to avoid
+        // Error: Duplicate files during packaging of APK
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+        exclude 'LICENSE.txt'
+    }
+
+     signingConfigs {
+         // Uncomment and set values and then this will work
+//         release {
+//             storeFile file(System.getenv('ANDROID_KEYSTORE_PATH'))
+//             storePassword System.getenv('ANDROID_STORE_PASS')
+//             keyAlias System.getenv('ANDROID_KEY_ALIAS')
+//             keyPassword System.getenv('ANDROID_KEY_PASS')
+//         }
+     }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix '.debug'
+            minifyEnabled false
+            Properties properties = new Properties()
+            properties.load(project.rootProject.file('local.properties').newDataInputStream())
+            buildConfigField "String", "FOODSPOTTING_API_KEY", "\"" + properties.getProperty('foodspotting_api_key') + "\""
+            // zipAlign false // this is default for debug
+        }
+        release {
+            Properties properties = new Properties()
+            properties.load(project.rootProject.file('local.properties').newDataInputStream())
+            buildConfigField "String", "FOODSPOTTING_API_KEY", "\"" + properties.getProperty('foodspotting_api_key') + "\""
+            // minifyEnabled true
+            // proguardFile '..\proguard.cfg'
+            // signingConfig signingConfigs.release
+            // zipAlign true // this is default for release
+            // testPackageName 'com.donnfelker.android.bootstrap.tests'
+            // testInstrumentationRunner 'android.test.InstrumentationTestRunner' // this is the default
+        }
+    }
+
+}
+
+dependencies {
+
+    // Android Support Libs
+    compile 'com.android.support:support-v4:23.1.1'
+    compile 'com.android.support:recyclerview-v7:23.1.1'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
+
+    compile 'com.google.code.gson:gson:2.4'
+
+    // Dependency Injection
+    compile 'com.google.dagger:dagger:2.0'
+
+
+    // View Injection
+    compile 'com.jakewharton:butterknife:7.0.1'
+
+    // Logging
+    compile 'com.jakewharton.timber:timber:3.0.2'
+
+    // Event Bus
+    compile 'com.squareup:otto:1.3.5'
+
+    // Image Loading
+    compile 'com.squareup.picasso:picasso:2.5.2'
+
+    // HTTP
+    compile 'com.squareup.retrofit:retrofit:1.5.1'
+
+    compile 'io.reactivex:rxjava:1.1.0'
+    compile 'io.reactivex:rxandroid:1.1.0'
+
+    compile 'pl.charmas.android:android-reactive-location:0.8@aar'
+    compile 'com.google.android.gms:play-services-location:8.1.0'
+
+    compile 'com.github.tajchert:nammu:1.1.1'
+
+    apt 'com.google.dagger:dagger-compiler:2.0'
+    provided 'javax.annotation:jsr250-api:1.0'
+}
