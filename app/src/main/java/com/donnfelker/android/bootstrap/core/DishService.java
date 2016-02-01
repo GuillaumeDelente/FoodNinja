@@ -2,6 +2,8 @@ package com.donnfelker.android.bootstrap.core;
 
 
 import com.donnfelker.android.bootstrap.BuildConfig;
+import com.donnfelker.android.bootstrap.model.DishesWrapper;
+import com.donnfelker.android.bootstrap.model.PlacesWrapper;
 
 import retrofit.http.GET;
 import retrofit.http.Query;

@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.donnfelker.android.bootstrap.R;
-import com.donnfelker.android.bootstrap.core.PlacesWrapper;
+import com.donnfelker.android.bootstrap.model.PlacesWrapper;
 
 import java.util.ArrayList;
 import java.util.List;

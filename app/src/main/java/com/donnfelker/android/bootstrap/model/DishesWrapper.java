@@ -1,4 +1,4 @@
-package com.donnfelker.android.bootstrap.core;
+package com.donnfelker.android.bootstrap.model;
 
 import java.util.List;
 

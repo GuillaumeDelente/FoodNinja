@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.donnfelker.android.bootstrap.R;
-import com.donnfelker.android.bootstrap.core.DishesWrapper;
+import com.donnfelker.android.bootstrap.model.DishesWrapper;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

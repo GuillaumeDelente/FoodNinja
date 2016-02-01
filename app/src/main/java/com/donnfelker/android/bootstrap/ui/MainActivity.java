@@ -8,6 +8,7 @@ import android.content.IntentSender;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -22,8 +23,8 @@ import com.donnfelker.android.bootstrap.BootstrapApplication;
 import com.donnfelker.android.bootstrap.BootstrapServiceProvider;
 import com.donnfelker.android.bootstrap.BuildConfig;
 import com.donnfelker.android.bootstrap.R;
-import com.donnfelker.android.bootstrap.core.DishesWrapper;
-import com.donnfelker.android.bootstrap.core.PlacesWrapper;
+import com.donnfelker.android.bootstrap.model.DishesWrapper;
+import com.donnfelker.android.bootstrap.model.PlacesWrapper;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationSettingsRequest;
@@ -50,7 +51,7 @@ import static rx.android.schedulers.AndroidSchedulers.mainThread;
  * <p/>
  * If you need to remove the authentication from the application please see
  */
-public class MainActivity extends BootstrapActivity {
+public class MainActivity extends AppCompatActivity {
 
   private static final int REQUEST_CHECK_SETTINGS = 1010;
   private static final int PICK_PLACE = 1011;

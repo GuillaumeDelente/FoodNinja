@@ -58,10 +58,6 @@ android {
         // This will give you the last GIT_SHA that was committed
         // buildConfigField "String", "GIT_SHA", "\"${gitSha}\""
 
-        manifestPlaceholders = [
-                fabricCrashlyticsApiKey: "7ba1725538a4afd002fb073a58cca7c3ba71dc84" //System.env.CRASHLYTICS_API_KEY   // Set this in your ~/.gradle/gradle.properties as: crashlyticsApiKey or use "$System.env.CRASHLYTICS_API_KEY"  to use a env variable (and then set that value, of course)
-        ]
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
@@ -85,6 +81,7 @@ android {
 
     lintOptions {
         abortOnError false
+        check 'NewerVersionAvailable'
     }
 
     buildTypes {
