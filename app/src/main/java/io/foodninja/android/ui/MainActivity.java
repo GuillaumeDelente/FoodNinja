@@ -1,6 +1,4 @@
-
-
-package com.donnfelker.android.bootstrap.ui;
+package io.foodninja.android.ui;
 
 import android.Manifest;
 import android.content.Intent;
@@ -19,12 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.donnfelker.android.bootstrap.BootstrapApplication;
-import com.donnfelker.android.bootstrap.BootstrapServiceProvider;
-import com.donnfelker.android.bootstrap.BuildConfig;
-import com.donnfelker.android.bootstrap.R;
-import com.donnfelker.android.bootstrap.model.DishesWrapper;
-import com.donnfelker.android.bootstrap.model.PlacesWrapper;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationSettingsRequest;
@@ -35,6 +27,12 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.foodninja.android.BootstrapApplication;
+import io.foodninja.android.BootstrapServiceProvider;
+import io.foodninja.android.BuildConfig;
+import io.foodninja.android.R;
+import io.foodninja.android.model.DishesWrapper;
+import io.foodninja.android.model.PlacesWrapper;
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import pl.tajchert.nammu.Nammu;
 import rx.Observable;

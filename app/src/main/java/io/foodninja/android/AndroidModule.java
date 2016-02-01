@@ -1,4 +1,4 @@
-package com.donnfelker.android.bootstrap;
+package io.foodninja.android;
 
 import android.accounts.AccountManager;
 import android.app.NotificationManager;

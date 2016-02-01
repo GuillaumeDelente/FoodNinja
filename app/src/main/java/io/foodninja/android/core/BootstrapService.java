@@ -1,9 +1,8 @@
 
-package com.donnfelker.android.bootstrap.core;
+package io.foodninja.android.core;
 
-import com.donnfelker.android.bootstrap.model.DishesWrapper;
-import com.donnfelker.android.bootstrap.model.PlacesWrapper;
-
+import io.foodninja.android.model.DishesWrapper;
+import io.foodninja.android.model.PlacesWrapper;
 import retrofit.RestAdapter;
 import rx.Observable;
 

@@ -1,4 +1,4 @@
-package com.donnfelker.android.bootstrap.ui;
+package io.foodninja.android.ui;
 
 import android.Manifest;
 import android.content.Intent;
@@ -6,10 +6,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import com.donnfelker.android.bootstrap.R;
-
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.foodninja.android.R;
 import pl.tajchert.nammu.Nammu;
 import pl.tajchert.nammu.PermissionCallback;
 import pl.tajchert.nammu.PermissionListener;

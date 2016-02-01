@@ -1,6 +1,9 @@
-package com.donnfelker.android.bootstrap;
+package io.foodninja.android;
 
-import com.donnfelker.android.bootstrap.ui.MainActivity;
+import io.foodninja.android.AndroidModule;
+import io.foodninja.android.BootstrapApplication;
+import io.foodninja.android.BootstrapModule;
+import io.foodninja.android.ui.MainActivity;
 
 import javax.inject.Singleton;
 

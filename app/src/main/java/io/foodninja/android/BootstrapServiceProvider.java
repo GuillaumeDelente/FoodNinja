@@ -1,8 +1,8 @@
-package com.donnfelker.android.bootstrap;
+package io.foodninja.android;
 
 import android.app.Activity;
 
-import com.donnfelker.android.bootstrap.core.BootstrapService;
+import io.foodninja.android.core.BootstrapService;
 
 public interface BootstrapServiceProvider {
     BootstrapService getService(Activity activity);

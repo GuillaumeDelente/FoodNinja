@@ -7,7 +7,6 @@ import android.accounts.AccountManager;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.util.Log;
-import static com.donnfelker.android.bootstrap.core.Constants.Auth.*;
 
 import com.donnfelker.android.bootstrap.tests.R;
 import com.donnfelker.android.bootstrap.util.Ln;

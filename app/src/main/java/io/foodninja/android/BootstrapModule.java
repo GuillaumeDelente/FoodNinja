@@ -1,10 +1,10 @@
-package com.donnfelker.android.bootstrap;
+package io.foodninja.android;
 
-import com.donnfelker.android.bootstrap.core.BootstrapService;
 import com.google.gson.Gson;
 
 import dagger.Module;
 import dagger.Provides;
+import io.foodninja.android.core.BootstrapService;
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
 

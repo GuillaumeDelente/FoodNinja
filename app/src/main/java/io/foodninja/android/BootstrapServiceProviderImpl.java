@@ -1,17 +1,16 @@
 
-package com.donnfelker.android.bootstrap;
+package io.foodninja.android;
 
 import android.accounts.AccountsException;
 import android.app.Activity;
 
-import com.donnfelker.android.bootstrap.core.BootstrapService;
-
 import java.io.IOException;
 
+import io.foodninja.android.core.BootstrapService;
 import retrofit.RestAdapter;
 
 /**
- * Provider for a {@link com.donnfelker.android.bootstrap.core.BootstrapService} instance
+ * Provider for a {@link BootstrapService} instance
  */
 public class BootstrapServiceProviderImpl implements BootstrapServiceProvider {
 

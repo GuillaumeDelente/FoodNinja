@@ -1,6 +1,6 @@
 
 
-package com.donnfelker.android.bootstrap;
+package io.foodninja.android;
 
 import android.app.Application;
 

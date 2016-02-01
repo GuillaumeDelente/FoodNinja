@@ -2,8 +2,8 @@
 
 <resources>
 
-    <color name="color_primary">#FF4CAF50</color>
-    <color name="color_primary_dark">#FF388E3C</color>
+    <color name="color_primary">#FF1B998B</color>
+    <color name="background">#FF26B9A9</color>
+    <color name="color_primary_dark">#FF167F73</color>
     <color name="accent">#FF9800</color>
-    <color name="background">#FFC8E6C9</color>
 </resources>

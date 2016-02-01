@@ -1,4 +1,4 @@
-package com.donnfelker.android.bootstrap.model;
+package io.foodninja.android.model;
 
 import java.util.List;
 

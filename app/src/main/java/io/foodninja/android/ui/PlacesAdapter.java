@@ -1,4 +1,4 @@
-package com.donnfelker.android.bootstrap.ui;
+package io.foodninja.android.ui;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
@@ -8,14 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.donnfelker.android.bootstrap.R;
-import com.donnfelker.android.bootstrap.model.PlacesWrapper;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.foodninja.android.R;
+import io.foodninja.android.model.PlacesWrapper;
 
 /**
  * Created by guillaume on 1/13/16.

@@ -1,4 +1,4 @@
-package com.donnfelker.android.bootstrap.model;
+package io.foodninja.android.model;
 
 /**
  * Created by guillaume on 1/13/16.
