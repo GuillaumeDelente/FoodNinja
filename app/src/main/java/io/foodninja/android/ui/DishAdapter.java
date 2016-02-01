@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,12 +38,14 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.DishViewHolder
   public void onBindViewHolder(DishViewHolder holder, int position) {
     holder.imageView.setImageDrawable(null);
     final DishesWrapper.Data.Sightings item = items.get(position);
+    /*
     Picasso.with(context)
         .load(item.getImageUrl())
         .noPlaceholder()
         .fit()
         .centerCrop()
         .into(holder.imageView);
+        */
     holder.title.setText(item.getName());
     holder.hearts.setText(String.valueOf(item.getHearts()));
   }
