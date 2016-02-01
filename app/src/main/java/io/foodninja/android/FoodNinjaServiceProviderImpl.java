@@ -12,11 +12,11 @@ import retrofit.RestAdapter;
 /**
  * Provider for a {@link BootstrapService} instance
  */
-public class BootstrapServiceProviderImpl implements BootstrapServiceProvider {
+public class FoodNinjaServiceProviderImpl implements FoodNinjaServiceProvider {
 
     private RestAdapter restAdapter;
 
-    public BootstrapServiceProviderImpl(RestAdapter restAdapter) {
+    public FoodNinjaServiceProviderImpl(RestAdapter restAdapter) {
         this.restAdapter = restAdapter;
     }
 

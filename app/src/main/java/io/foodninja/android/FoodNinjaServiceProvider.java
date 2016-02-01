@@ -4,6 +4,6 @@ import android.app.Activity;
 
 import io.foodninja.android.core.BootstrapService;
 
-public interface BootstrapServiceProvider {
+public interface FoodNinjaServiceProvider {
     BootstrapService getService(Activity activity);
 }

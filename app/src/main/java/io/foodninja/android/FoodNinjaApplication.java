@@ -9,15 +9,15 @@ import pl.tajchert.nammu.Nammu;
 /**
  * Android Bootstrap application
  */
-public abstract class BootstrapApplication extends Application {
+public abstract class FoodNinjaApplication extends Application {
 
-    private static BootstrapApplication instance;
-    private BootstrapComponent component;
+    private static FoodNinjaApplication instance;
+    private FoodNinjaComponent component;
 
     /**
      * Create main application
      */
-    public BootstrapApplication() {
+    public FoodNinjaApplication() {
     }
 
 
@@ -36,7 +36,7 @@ public abstract class BootstrapApplication extends Application {
         onAfterInjection();
       Nammu.init(getApplicationContext());
     }
-    public static BootstrapComponent component() {
+    public static FoodNinjaComponent component() {
         return instance.component;
     }
 
@@ -44,20 +44,20 @@ public abstract class BootstrapApplication extends Application {
 
     protected abstract void init();
 
-    public static BootstrapApplication getInstance() {
+    public static FoodNinjaApplication getInstance() {
         return instance;
     }
 
-    public BootstrapComponent getComponent() {
+    public FoodNinjaComponent getComponent() {
         return component;
     }
 
     public final static class DaggerComponentInitializer {
 
-        public static BootstrapComponent init() {
-            return DaggerBootstrapComponent.builder()
+        public static FoodNinjaComponent init() {
+            return DaggerFoodNinjaComponent.builder()
                     .androidModule(new AndroidModule())
-                    .bootstrapModule(new BootstrapModule())
+                    .foodNinjaModule(new FoodNinjaModule())
                     .build();
         }
 

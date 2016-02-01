@@ -5,7 +5,7 @@ final class Modules {
     static Object[] list() {
         return new Object[] {
                 new AndroidModule(),
-                new BootstrapModule()
+                new FoodNinjaModule()
         };
     }
 

@@ -3,7 +3,7 @@ package io.foodninja.android;
 
 import timber.log.Timber;
 
-public class BootstrapApplicationImpl extends BootstrapApplication {
+public class FoodNinjaApplicationImpl extends FoodNinjaApplication {
 
     @Override
     protected void onAfterInjection() {

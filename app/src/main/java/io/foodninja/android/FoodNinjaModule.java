@@ -13,7 +13,7 @@ import retrofit.converter.GsonConverter;
  * Register all of your entry points below.
  */
 @Module
-public class BootstrapModule {
+public class FoodNinjaModule {
     
     @Provides
     BootstrapService provideBootstrapService(RestAdapter restAdapter) {
@@ -21,8 +21,8 @@ public class BootstrapModule {
     }
 
     @Provides
-    BootstrapServiceProvider provideBootstrapServiceProvider(RestAdapter restAdapter) {
-        return new BootstrapServiceProviderImpl(restAdapter);
+    FoodNinjaServiceProvider provideBootstrapServiceProvider(RestAdapter restAdapter) {
+        return new FoodNinjaServiceProviderImpl(restAdapter);
     }
 
     @Provides

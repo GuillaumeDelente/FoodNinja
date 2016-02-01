@@ -27,8 +27,8 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.foodninja.android.BootstrapApplication;
-import io.foodninja.android.BootstrapServiceProvider;
+import io.foodninja.android.FoodNinjaApplication;
+import io.foodninja.android.FoodNinjaServiceProvider;
 import io.foodninja.android.BuildConfig;
 import io.foodninja.android.R;
 import io.foodninja.android.model.DishesWrapper;
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
   @Bind(R.id.progress)
   ProgressBar progress;
   @Inject
-  protected BootstrapServiceProvider serviceProvider;
+  protected FoodNinjaServiceProvider serviceProvider;
   private DishAdapter dishAdapter;
   private PlacesAdapter placesAdapter;
   private Location lastLocation;
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
       startActivity(new Intent(this, LocationPermissionActivity.class));
       return;
     }
-    BootstrapApplication.component().inject(this);
+    FoodNinjaApplication.component().inject(this);
     setContentView(R.layout.fragment_carousel);
     // View injection with Butterknife
     ButterKnife.bind(this);

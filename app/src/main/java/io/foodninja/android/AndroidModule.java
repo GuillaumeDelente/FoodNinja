@@ -24,7 +24,7 @@ public class AndroidModule {
     @Provides
     @Singleton
     Context provideAppContext() {
-        return BootstrapApplication.getInstance().getApplicationContext();
+        return FoodNinjaApplication.getInstance().getApplicationContext();
     }
 
     @Provides
