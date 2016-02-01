@@ -17,6 +17,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationSettingsRequest;
@@ -27,9 +29,9 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.foodninja.android.BuildConfig;
 import io.foodninja.android.FoodNinjaApplication;
 import io.foodninja.android.FoodNinjaServiceProvider;
-import io.foodninja.android.BuildConfig;
 import io.foodninja.android.R;
 import io.foodninja.android.model.DishesWrapper;
 import io.foodninja.android.model.PlacesWrapper;
@@ -64,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
   ProgressBar progress;
   @Inject
   protected FoodNinjaServiceProvider serviceProvider;
+  @Inject
+  protected Tracker gaTracker;
   private DishAdapter dishAdapter;
   private PlacesAdapter placesAdapter;
   private Location lastLocation;
@@ -96,6 +100,11 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void onPlaceChanged(PlacesWrapper.Data.Place place) {
+    gaTracker.send(new HitBuilders.EventBuilder()
+        .setCategory("Place")
+        .setAction("Change Place")
+        .setLabel(place.getName() + " " + place.getId())
+        .build());
     currentPlace = place;
     dishAdapter.clear();
     hidePlacesList();
@@ -233,6 +242,11 @@ public class MainActivity extends AppCompatActivity {
             currentPlace = place;
             getSupportActionBar().setTitle(place.getName());
             supportInvalidateOptionsMenu();
+            gaTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Place")
+                .setAction("Initial Place")
+                .setLabel(place.getName() + " " + place.getId())
+                .build());
           }
         })
         .observeOn(Schedulers.io())
