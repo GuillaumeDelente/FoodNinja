@@ -1,11 +1,11 @@
-package com.donnfelker.android.bootstrap;
+package io.foodninja.android;
 
 
 final class Modules {
     static Object[] list() {
         return new Object[] {
                 new AndroidModule(),
-                new BootstrapModule()
+                new FoodNinjaModule()
         };
     }
 

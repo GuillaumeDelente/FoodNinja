@@ -58,3 +58,4 @@ gen-external-apklibs
 
 # Fabric
 fabric.properties
+*.jks
