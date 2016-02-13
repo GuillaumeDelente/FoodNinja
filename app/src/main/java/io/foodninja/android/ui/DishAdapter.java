@@ -51,7 +51,6 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.DishViewHolder
         .into(holder.imageView, new Callback() {
           @Override
           public void onSuccess() {
-            Log.d("Background", "Clearing background");
             holder.background.setVisibility(View.GONE);
           }
 

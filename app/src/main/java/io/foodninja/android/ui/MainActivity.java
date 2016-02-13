@@ -42,6 +42,8 @@ import rx.Subscriber;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 import static rx.android.schedulers.AndroidSchedulers.mainThread;
 
@@ -54,7 +56,6 @@ import static rx.android.schedulers.AndroidSchedulers.mainThread;
 public class MainActivity extends AppCompatActivity {
 
   private static final int REQUEST_CHECK_SETTINGS = 1010;
-  private static final int PICK_PLACE = 1011;
 
   @Bind(R.id.recycler_view)
   RecyclerView recyclerView;
@@ -72,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
   private PlacesAdapter placesAdapter;
   private Location lastLocation;
   private PlacesWrapper.Data.Place currentPlace;
+  private PublishSubject<PlacesWrapper.Data.Place> publishSubject = PublishSubject.create();
+  private CompositeSubscription subscriptions = new CompositeSubscription();
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
@@ -91,150 +94,30 @@ public class MainActivity extends AppCompatActivity {
     placesAdapter = new PlacesAdapter(this, new PlacesAdapter.OnPlaceSelectedListener() {
       @Override
       public void onPlaceSelected(PlacesWrapper.Data.Place place) {
-        onPlaceChanged(place);
+        publishSubject.onNext(place);
       }
     });
     placesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     placesRecyclerView.setAdapter(placesAdapter);
-    fetchDishes();
+    initSubscriptions();
+
   }
 
-  private void onPlaceChanged(PlacesWrapper.Data.Place place) {
-    gaTracker.send(new HitBuilders.EventBuilder()
-        .setCategory("Place")
-        .setAction("Change Place")
-        .setLabel(place.getName() + " " + place.getId())
-        .build());
-    currentPlace = place;
-    dishAdapter.clear();
-    hidePlacesList();
-    progress.setVisibility(View.VISIBLE);
-    serviceProvider.getService(MainActivity.this).getDishes(place.getId())
-        .subscribeOn(Schedulers.io())
-        .observeOn(mainThread())
-    .subscribe(new Subscriber<DishesWrapper>() {
-      @Override
-      public void onCompleted() {
-
-      }
-
-      @Override
-      public void onError(Throwable e) {
-
-      }
-
-      @Override
-      public void onNext(DishesWrapper dishesWrapper) {
-        progress.setVisibility(View.GONE);
-        dishAdapter.setItems(dishesWrapper.getSightings());
-      }
-    });
-  }
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    MenuInflater inflater = getMenuInflater();
-    inflater.inflate(R.menu.main, menu);
-    return true;
-  }
-
-  @Override
-  public boolean onPrepareOptionsMenu(Menu menu) {
-    super.onPrepareOptionsMenu(menu);
-    MenuItem item = menu.findItem(R.id.search);
-    if (item != null) {
-      item.setVisible(lastLocation != null && placesRecyclerView.getVisibility() != View.VISIBLE);
-    }
-    return true;
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    // Handle item selection
-    switch (item.getItemId()) {
-      case R.id.search:
-        showPlacesList();
-        return true;
-      case android.R.id.home:
-        hidePlacesList();
-        return true;
-      default:
-        return super.onOptionsItemSelected(item);
-    }
-  }
-
-  private void showPlacesList() {
-    placesRecyclerView.setVisibility(View.VISIBLE);
-    getSupportActionBar().setTitle(R.string.places_around_you);
-    ViewCompat.setNestedScrollingEnabled(placesRecyclerView, false);
-    supportInvalidateOptionsMenu();
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
-  }
-
-  private void hidePlacesList() {
-    placesRecyclerView.setVisibility(View.GONE);
-    getSupportActionBar().setTitle(currentPlace.getName());
-    supportInvalidateOptionsMenu();
-    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-  }
-
-  private void fetchDishes() {
-    Log.d("Request", "Fetch dishes");
-    final ReactiveLocationProvider locationProvider = new ReactiveLocationProvider(getApplicationContext());
-    final LocationRequest locationRequest = LocationRequest.create()
-        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-        .setNumUpdates(1)
-        .setInterval(100);
-    locationProvider
-        .checkLocationSettings(
-            new LocationSettingsRequest.Builder()
-                .addLocationRequest(locationRequest)
-                .setAlwaysShow(true)  //Refrence: http://stackoverflow.com/questions/29824408/google-play-services-locationservices-api-new-option-never
-                .build()
-        ).doOnNext(new Action1<LocationSettingsResult>() {
-      @Override
-      public void call(LocationSettingsResult locationSettingsResult) {
-        Status status = locationSettingsResult.getStatus();
-        if (status.getStatusCode() == LocationSettingsStatusCodes.RESOLUTION_REQUIRED) {
-          try {
-            status.startResolutionForResult(MainActivity.this, REQUEST_CHECK_SETTINGS);
-          } catch (IntentSender.SendIntentException th) {
-            Log.e("MainActivity", "Error opening settings activity.", th);
-          }
-        }
-      }
-    })
-        .flatMap(new Func1<LocationSettingsResult, Observable<Location>>() {
-          @Override
-          public Observable<Location> call(LocationSettingsResult locationSettingsResult) {
-            return locationProvider.getUpdatedLocation(locationRequest);
-          }
-        })
-        .flatMap(new Func1<Location, Observable<PlacesWrapper>>() {
-          @Override
-          public Observable<PlacesWrapper> call(Location location) {
-            lastLocation = location;
-            return serviceProvider.getService(MainActivity.this).getPlaces(
-                String.valueOf(location.getLatitude()),
-                String.valueOf(location.getLongitude()));
-          }
-        })
-        .observeOn(mainThread())
-        .doOnNext(new Action1<PlacesWrapper>() {
-          @Override
-          public void call(PlacesWrapper placesWrapper) {
-            placesAdapter.setItems(placesWrapper.getData().getPlaces());
-            placesAdapter.notifyDataSetChanged();
-          }
-        })
-        .observeOn(Schedulers.io())
-        .flatMap(new Func1<PlacesWrapper, Observable<PlacesWrapper.Data.Place>>() {
-          @Override
-          public Observable<PlacesWrapper.Data.Place> call(PlacesWrapper placesWrapper) {
-            return Observable.just(placesWrapper.getData().getPlaces().get(0));
-          }
-        })
+  private void initSubscriptions() {
+    subscriptions.add(
+    Observable.merge(
+        getClosestPlaceObservable(),
+        publishSubject.doOnNext(
+            new Action1<PlacesWrapper.Data.Place>() {
+              @Override
+              public void call(PlacesWrapper.Data.Place place) {
+                gaTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Place")
+                    .setAction("Change Place")
+                    .setLabel(place.getName() + " " + place.getId())
+                    .build());
+              }
+            }))
         .observeOn(mainThread())
         .doOnNext(new Action1<PlacesWrapper.Data.Place>() {
           @Override
@@ -242,11 +125,9 @@ public class MainActivity extends AppCompatActivity {
             currentPlace = place;
             getSupportActionBar().setTitle(place.getName());
             supportInvalidateOptionsMenu();
-            gaTracker.send(new HitBuilders.EventBuilder()
-                .setCategory("Place")
-                .setAction("Initial Place")
-                .setLabel(place.getName() + " " + place.getId())
-                .build());
+            dishAdapter.clear();
+            hidePlacesList();
+            progress.setVisibility(View.VISIBLE);
           }
         })
         .observeOn(Schedulers.io())
@@ -281,6 +162,129 @@ public class MainActivity extends AppCompatActivity {
             if (BuildConfig.DEBUG) {
               Log.d("Request", "Request onNext");
             }
+          }
+        }));
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.main, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    super.onPrepareOptionsMenu(menu);
+    MenuItem item = menu.findItem(R.id.search);
+    if (item != null) {
+      item.setVisible(lastLocation != null && placesRecyclerView.getVisibility() != View.VISIBLE);
+    }
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    // Handle item selection
+    switch (item.getItemId()) {
+      case R.id.search:
+        showPlacesList();
+        return true;
+      case android.R.id.home:
+        hidePlacesList();
+        return true;
+      default:
+        return super.onOptionsItemSelected(item);
+    }
+  }
+
+  @Override
+  protected void onDestroy() {
+    subscriptions.unsubscribe();
+    super.onDestroy();
+  }
+
+  private void showPlacesList() {
+    placesRecyclerView.setVisibility(View.VISIBLE);
+    getSupportActionBar().setTitle(R.string.places_around_you);
+    ViewCompat.setNestedScrollingEnabled(placesRecyclerView, false);
+    supportInvalidateOptionsMenu();
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
+  }
+
+  private void hidePlacesList() {
+    placesRecyclerView.setVisibility(View.GONE);
+    getSupportActionBar().setTitle(currentPlace.getName());
+    supportInvalidateOptionsMenu();
+    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+  }
+
+  private Observable<PlacesWrapper.Data.Place> getClosestPlaceObservable() {
+    Log.d("Request", "Fetch dishes");
+    final ReactiveLocationProvider locationProvider = new ReactiveLocationProvider(getApplicationContext());
+    final LocationRequest locationRequest = LocationRequest.create()
+        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        .setNumUpdates(1)
+        .setInterval(100);
+    return locationProvider
+        .checkLocationSettings(
+            new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest)
+                .setAlwaysShow(true)  //Refrence: http://stackoverflow.com/questions/29824408/google-play-services-locationservices-api-new-option-never
+                .build()
+        )
+        .doOnNext(new Action1<LocationSettingsResult>() {
+          @Override
+          public void call(LocationSettingsResult locationSettingsResult) {
+            Status status = locationSettingsResult.getStatus();
+            if (status.getStatusCode() == LocationSettingsStatusCodes.RESOLUTION_REQUIRED) {
+              try {
+                status.startResolutionForResult(MainActivity.this, REQUEST_CHECK_SETTINGS);
+              } catch (IntentSender.SendIntentException th) {
+                Log.e("MainActivity", "Error opening settings activity.", th);
+              }
+            }
+          }
+        })
+        .flatMap(new Func1<LocationSettingsResult, Observable<Location>>() {
+          @Override
+          public Observable<Location> call(LocationSettingsResult locationSettingsResult) {
+            return locationProvider.getUpdatedLocation(locationRequest);
+          }
+        })
+        .flatMap(new Func1<Location, Observable<PlacesWrapper>>() {
+          @Override
+          public Observable<PlacesWrapper> call(Location location) {
+            lastLocation = location;
+            return serviceProvider.getService(MainActivity.this).getPlaces(
+                String.valueOf(location.getLatitude()),
+                String.valueOf(location.getLongitude()));
+          }
+        })
+        .observeOn(mainThread())
+        .doOnNext(new Action1<PlacesWrapper>() {
+          @Override
+          public void call(PlacesWrapper placesWrapper) {
+            placesAdapter.setItems(placesWrapper.getData().getPlaces());
+            placesAdapter.notifyDataSetChanged();
+          }
+        })
+        .observeOn(Schedulers.io())
+        .flatMap(new Func1<PlacesWrapper, Observable<PlacesWrapper.Data.Place>>() {
+          @Override
+          public Observable<PlacesWrapper.Data.Place> call(PlacesWrapper placesWrapper) {
+            return Observable.just(placesWrapper.getData().getPlaces().get(0));
+          }
+        })
+        .doOnNext(new Action1<PlacesWrapper.Data.Place>() {
+          @Override
+          public void call(PlacesWrapper.Data.Place place) {
+            gaTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Place")
+                .setAction("Initial Place")
+                .setLabel(place.getName() + " " + place.getId())
+                .build());
           }
         });
   }
