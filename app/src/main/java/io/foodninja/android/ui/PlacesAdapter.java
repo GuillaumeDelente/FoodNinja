@@ -72,6 +72,7 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.PlacesView
       super(itemView);
       ButterKnife.bind(this, itemView);
       itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.background));
+      text1.setTextColor(ContextCompat.getColor(context, android.R.color.white));
     }
   }
 

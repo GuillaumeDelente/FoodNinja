@@ -2,12 +2,14 @@ package io.foodninja.android.ui;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -37,15 +39,27 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.DishViewHolder
   }
 
   @Override
-  public void onBindViewHolder(DishViewHolder holder, int position) {
+  public void onBindViewHolder(final DishViewHolder holder, int position) {
     holder.imageView.setImageDrawable(null);
+    holder.background.setVisibility(View.VISIBLE);
     final DishesWrapper.Data.Sightings item = items.get(position);
     Picasso.with(context)
         .load(item.getImageUrl())
         .noPlaceholder()
         .fit()
         .centerCrop()
-        .into(holder.imageView);
+        .into(holder.imageView, new Callback() {
+          @Override
+          public void onSuccess() {
+            Log.d("Background", "Clearing background");
+            holder.background.setVisibility(View.GONE);
+          }
+
+          @Override
+          public void onError() {
+
+          }
+        });
     holder.title.setText(item.getName());
     holder.hearts.setText(String.valueOf(item.getHearts()));
   }
@@ -71,6 +85,8 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.DishViewHolder
   }
 
   class DishViewHolder extends RecyclerView.ViewHolder {
+    @Bind(R.id.background)
+    ImageView background;
     @Bind(R.id.image_view)
     ImageView imageView;
     @Bind(R.id.title)
